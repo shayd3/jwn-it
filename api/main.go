@@ -12,28 +12,35 @@ import (
 )
 
 func main() {
+	// Set up DB
 	db, err := setupDB()
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer db.Close()
+
 	// Creates a gin router with default middleware
 	// logger and recovery (crash-free) middleware
 	router := gin.Default()
 
-
-	router.GET("/ping", func(c *gin.Context) {
+	router.GET("/v1/ping", func(c *gin.Context) {
 		c.JSON(200, gin.H {
 			"message": "pong",
 		})
 	})
-	
-	router.GET("/user/:name", func(c *gin.Context) {
-		name := c.Param("name")
-		c.String(http.StatusOK, "Hello %s", name)
 
+	router.POST("/v1/create", func(c *gin.Context) {
+		fmt.Printf("creating short url")
+		c.String(http.StatusOK, "Short URL created")
 	})
 
+	// Route slug to appropriate url
+	router.NoRoute(func(c *gin.Context) {
+		q := c.Request.URL.EscapedPath()
+		c.JSON(200, gin.H {
+			"slug": q,
+		})
+	})
 
 	// By default, it serves on :8080 unless
 	// a PORT environment variable was defined
