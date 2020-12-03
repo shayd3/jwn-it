@@ -48,7 +48,24 @@ func main() {
 			})
 		}
 
-		fmt.Printf("creating short url")
+		err = addURLEntry(db, urlEntry)
+		if err != nil {
+			return 
+		}
+	})
+
+	router.GET("/v1/urls", func(c *gin.Context) {
+		urlEntries, err := getURLEntries(db)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H {
+				"error": err.Error(),
+			})
+		} else {
+			c.JSON(http.StatusOK, gin.H {
+				"data": urlEntries,
+				"error": "",
+			})
+		}
 	})
 
 	// Route slug to appropriate url
@@ -79,6 +96,24 @@ func addURLEntry(db *bolt.DB, entry URLEntry) error {
 	})
 	fmt.Println("Added URL Entry")
 	return err
+}
+
+func getURLEntries(db *bolt.DB) ([]URLEntry, error) {
+	urlEntrys := []URLEntry{}
+	err := db.View(func(t *bolt.Tx) error {
+		bucket := t.Bucket([]byte("JWNIT"))
+		bucket.ForEach(func(k, v []byte) error {
+			var urlEntry URLEntry
+			err := json.Unmarshal(v, &urlEntry)
+			if err != nil {
+				return err
+			}
+			urlEntrys = append(urlEntrys, urlEntry)
+			return nil
+		})
+		return nil
+	})
+	return urlEntrys, err
 }
 
 func setupDB() (*bolt.DB, error) {
