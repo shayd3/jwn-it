@@ -25,13 +25,30 @@ func main() {
 
 	router.GET("/v1/ping", func(c *gin.Context) {
 		c.JSON(200, gin.H {
-			"message": "pong",
+			"data": gin.H {
+				"message": "pong",
+			},
+			"error": "",
 		})
 	})
 
 	router.POST("/v1/create", func(c *gin.Context) {
+		urlEntry := URLEntry{}
+		err := c.BindJSON(&urlEntry)
+		urlEntry.Created = time.Now()
+		
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H {
+				"error": err.Error(),
+			})
+		} else {
+			c.JSON(http.StatusOK, gin.H {
+				"data": urlEntry,
+				"error": "",
+			})
+		}
+
 		fmt.Printf("creating short url")
-		c.String(http.StatusOK, "Short URL created")
 	})
 
 	// Route slug to appropriate url
@@ -91,7 +108,7 @@ func setupDB() (*bolt.DB, error) {
 // the target (original) url and the slug for the
 // short url. Slug is concidered the key
 type URLEntry struct {
-	Slug string
-	Created time.Time
-	TargetURL string
+	Slug string `json:"slug"`
+	Created time.Time 
+	TargetURL string `json:"targetURL"`
 }
