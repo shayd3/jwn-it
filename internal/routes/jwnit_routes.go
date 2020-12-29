@@ -1,6 +1,8 @@
 package routes
 
 import (
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -30,16 +32,16 @@ func addJwnItRoutes(rg *gin.RouterGroup) {
 	})
 
 	jwnit.GET("/urls", func(c *gin.Context) {
-		// urlEntries, err := getURLEntries(db)
-		// if err != nil {
-		// 	c.JSON(http.StatusBadRequest, gin.H {
-		// 		"error": err.Error(),
-		// 	})
-		// } else {
-		// 	c.JSON(http.StatusOK, gin.H {
-		// 		"data": urlEntries,
-		// 		"error": "",
-		// 	})
-		// }
+		urlEntries, err := getURLEntries(db)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H {
+				"error": err.Error(),
+			})
+		} else {
+			c.JSON(http.StatusOK, gin.H {
+				"data": urlEntries,
+				"error": "",
+			})
+		}
 	})
 }

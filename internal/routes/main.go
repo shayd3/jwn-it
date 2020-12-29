@@ -25,10 +25,6 @@ func getRoutes() {
 
 func getRouterDefault() {
 	router.NoRoute(func(c *gin.Context) {
-		//q := c.Request.URL.EscapedPath()
-		// c.JSON(301, gin.H {
-		// 	"slug": q,
-		// })
 		c.Redirect(301,"https://google.com/")
 	})
 }

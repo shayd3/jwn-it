@@ -6,7 +6,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/shayd3/jwn-it/routes"
+	"github.com/shayd3/jwn-it/internal/routes"
 	bolt "go.etcd.io/bbolt"
 )
 
