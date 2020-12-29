@@ -4,10 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
-	"net/http"
 	"time"
 
-	"github.com/gin-gonic/gin"
+	"github.com/shayd3/jwn-it/routes"
 	bolt "go.etcd.io/bbolt"
 )
 
@@ -18,68 +17,8 @@ func main() {
 		log.Fatal(err)
 	}
 	defer db.Close()
-
-	// Creates a gin router with default middleware
-	// logger and recovery (crash-free) middleware
-	router := gin.Default()
-
-	router.GET("/v1/ping", func(c *gin.Context) {
-		c.JSON(200, gin.H {
-			"data": gin.H {
-				"message": "pong",
-			},
-			"error": "",
-		})
-	})
-
-	router.POST("/v1/create", func(c *gin.Context) {
-		urlEntry := URLEntry{}
-		err := c.BindJSON(&urlEntry)
-		urlEntry.Created = time.Now()
-		
-		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H {
-				"error": err.Error(),
-			})
-		} else {
-			c.JSON(http.StatusOK, gin.H {
-				"data": urlEntry,
-				"error": "",
-			})
-		}
-
-		err = addURLEntry(db, urlEntry)
-		if err != nil {
-			return 
-		}
-	})
-
-	router.GET("/v1/urls", func(c *gin.Context) {
-		urlEntries, err := getURLEntries(db)
-		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H {
-				"error": err.Error(),
-			})
-		} else {
-			c.JSON(http.StatusOK, gin.H {
-				"data": urlEntries,
-				"error": "",
-			})
-		}
-	})
-
-	// Route slug to appropriate url
-	router.NoRoute(func(c *gin.Context) {
-		q := c.Request.URL.EscapedPath()
-		c.JSON(200, gin.H {
-			"slug": q,
-		})
-	})
-
-	// By default, it serves on :8080 unless
-	// a PORT environment variable was defined
-	router.Run()
-	// router.Run(":3000") for a hard coded port
+	
+	routes.Run()
 }
 
 func addURLEntry(db *bolt.DB, entry URLEntry) error {
