@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -40,6 +41,28 @@ func GetURLEntries(c *gin.Context) {
 	}
 }
 
+// GetURLEntry gets a URLEntry on the slug
+func GetURLEntry(c *gin.Context) models.URLEntry {
+	slug := strings.TrimLeft(c.Request.RequestURI, "/")
+	urlEntry := models.URLEntry{}
+
+	err := data.DB.View(func(t *bolt.Tx) error {
+		bucket := t.Bucket([]byte("JWNIT"))
+		key := []byte(slug)
+		err := json.Unmarshal(bucket.Get(key), &urlEntry)
+		if err != nil {
+			return err
+		}
+		return nil
+	})
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H {
+			"error": err.Error(),
+		})
+	}
+	return urlEntry
+}
+
 // AddURLEntry adds an URLEntry to the db. 
 func AddURLEntry(c *gin.Context) {
 	urlEntry := models.URLEntry{}
@@ -69,5 +92,11 @@ func AddURLEntry(c *gin.Context) {
 		})
 	}
 	fmt.Println("Added URL Entry")
+}
+
+// RouteToTargetURL will map a slug to a targetURL and redirect to that targetURL
+func RouteToTargetURL(c *gin.Context) {
+	urlEntry := GetURLEntry(c)
+	c.Redirect(301,urlEntry.TargetURL)
 }
 
