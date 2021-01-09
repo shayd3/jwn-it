@@ -11,9 +11,18 @@ var (
 
 // Run will start server
 func Run() {
+	router.Run()
+}
+
+// GetRouter will return the global variable router
+func GetRouter() *gin.Engine {
+	return router
+}
+
+// SetupRouter sets up router with all it's routes
+func SetupRouter() {
 	getRoutes()
 	getRouterDefault()
-	router.Run()
 }
 
 func getRoutes() {
