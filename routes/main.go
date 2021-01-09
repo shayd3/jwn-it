@@ -2,6 +2,7 @@ package routes
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/shayd3/jwn-it/controllers"
 )
 
 var (
@@ -22,7 +23,5 @@ func getRoutes() {
 }
 
 func getRouterDefault() {
-	router.NoRoute(func(c *gin.Context) {
-		c.Redirect(301,"https://google.com/")
-	})
+	router.NoRoute(controllers.RouteToTargetURL)
 }
