@@ -10,4 +10,5 @@ func addJwnItRoutes(rg *gin.RouterGroup) {
 
 	jwnit.POST("/create", controllers.AddURLEntry)
 	jwnit.GET("/urls", controllers.GetURLEntries)
+	jwnit.GET("/", controllers.Home)
 }

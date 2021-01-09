@@ -13,6 +13,16 @@ import (
 	bolt "go.etcd.io/bbolt"
 )
 
+// Home routes back to the home page!
+func Home(c *gin.Context) {
+	c.JSON(http.StatusOK, gin.H {
+		"data": gin.H {
+			"message": "Hey, welcome home!",
+		},
+		"error" : "",
+	})
+}
+
 // GetURLEntries returns a list of URLEntry objects.
 func GetURLEntries(c *gin.Context) {
 	urlEntries := []models.URLEntry{}
@@ -42,7 +52,7 @@ func GetURLEntries(c *gin.Context) {
 }
 
 // GetURLEntry gets a URLEntry on the slug
-func GetURLEntry(c *gin.Context) models.URLEntry {
+func GetURLEntry(c *gin.Context) (models.URLEntry, error) {
 	slug := strings.TrimLeft(c.Request.RequestURI, "/")
 	urlEntry := models.URLEntry{}
 
@@ -55,19 +65,19 @@ func GetURLEntry(c *gin.Context) models.URLEntry {
 		}
 		return nil
 	})
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H {
-			"error": err.Error(),
-		})
-	}
-	return urlEntry
+
+	return urlEntry, err
 }
 
-// AddURLEntry adds an URLEntry to the db. 
+// AddURLEntry adds an URLEntry to the db. If TargetURL does not contain 'http://' or 'https://', it will automatically add 'https://'
 func AddURLEntry(c *gin.Context) {
 	urlEntry := models.URLEntry{}
 	err := c.BindJSON(&urlEntry)
+
 	urlEntry.Created = time.Now()
+	if (!hasHTTPProtocol(urlEntry.TargetURL)) {
+		urlEntry.TargetURL = addHTTPSToURL(urlEntry.TargetURL)
+	}
 
 	err = data.DB.Update(func(t *bolt.Tx) error {
 		encoded, err := json.Marshal(urlEntry)
@@ -95,8 +105,22 @@ func AddURLEntry(c *gin.Context) {
 }
 
 // RouteToTargetURL will map a slug to a targetURL and redirect to that targetURL
+// if URLEntry with given slug does not exist, this will re-route to /
 func RouteToTargetURL(c *gin.Context) {
-	urlEntry := GetURLEntry(c)
-	c.Redirect(301,urlEntry.TargetURL)
+	urlEntry, err := GetURLEntry(c)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H {
+			"error": err.Error(),
+		})
+	} else {
+		c.Redirect(301,urlEntry.TargetURL)
+	}
 }
 
+func addHTTPSToURL(url string) string {
+	return "https://" + url
+}
+
+func hasHTTPProtocol(url string) bool {
+	return strings.Contains(url, "http://") || strings.Contains(url, "https://")
+}
