@@ -16,10 +16,7 @@ import (
 // Home routes back to the home page!
 func Home(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H {
-		"data": gin.H {
-			"message": "Hey, welcome home!",
-		},
-		"error" : "",
+		"message": "Hey, welcome home!",
 	})
 }
 
@@ -40,14 +37,9 @@ func GetURLEntries(c *gin.Context) {
 		return nil
 	})
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H {
-			"error": err.Error(),
-		})
+		panic(err)
 	} else {
-		c.JSON(http.StatusOK, gin.H {
-			"data": urlEntries,
-			"error": "",
-		})
+		c.JSON(http.StatusOK, urlEntries)
 	}
 }
 
@@ -92,14 +84,9 @@ func AddURLEntry(c *gin.Context) {
 	})
 
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H {
-			"error": err.Error(),
-		})
+		panic(err)
 	} else {
-		c.JSON(http.StatusOK, gin.H {
-			"data": urlEntry,
-			"error": "",
-		})
+		c.JSON(http.StatusOK, urlEntry)
 	}
 	fmt.Println("Added URL Entry")
 }
@@ -109,9 +96,7 @@ func AddURLEntry(c *gin.Context) {
 func RouteToTargetURL(c *gin.Context) {
 	urlEntry, err := GetURLEntry(c)
 	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H {
-			"error": err.Error(),
-		})
+		panic(err)
 	} else {
 		c.Redirect(301,urlEntry.TargetURL)
 	}

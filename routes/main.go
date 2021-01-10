@@ -28,7 +28,6 @@ func SetupRouter() {
 func getRoutes() {
 	v1 := router.Group("/v1")
 	addJwnItRoutes(v1)
-	addPingRoutes(v1)
 }
 
 func getRouterDefault() {
