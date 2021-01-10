@@ -10,10 +10,7 @@ func addPingRoutes(rg *gin.RouterGroup) {
 
 	ping.GET("/ping", func(c *gin.Context) {
 		c.JSON(200, gin.H {
-			"data": gin.H {
-				"message": "pong",
-			},
-			"error": "",
+			"message": "pong",
 		})
 	})
 }
