@@ -3,6 +3,7 @@ package data
 import (
 	"fmt"
 	"log"
+	"os"
 	"time"
 
 	bolt "go.etcd.io/bbolt"
@@ -11,11 +12,11 @@ import (
 // DB is a global variable for our DB instance
 var DB *bolt.DB
 
-// ConnectDatabase sets up the bolt db connection/bucket creation
-func ConnectDatabase() {
+// ConnectDatabase sets up the bolt db connection/bucket creation 
+func ConnectDatabase(databaseName string, fileMode os.FileMode) {
 	// set up bboltdb
 	// Open my.db data file in current dir
-	db, err := bolt.Open("jwn.db", 0600, &bolt.Options{Timeout: 1 * time.Second})
+	db, err := bolt.Open(databaseName, fileMode, &bolt.Options{Timeout: 1 * time.Second})
 	if err != nil {
 		log.Fatal(err)
 	}
