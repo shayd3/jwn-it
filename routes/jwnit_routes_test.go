@@ -36,21 +36,6 @@ func cleanup() {
 	}
 }
 
-func TestPingRoute(t *testing.T) {
-	ts := httptest.NewServer(GetRouter()) 
-	// Shut down server and block until all requests go through
-	defer ts.Close()
-
-	resp, err := http.Get(fmt.Sprintf("%s/v1/ping", ts.URL))
-	if err != nil {
-		t.Fatalf("Expected no error, got %v", err)
-	}
-
-	if resp.StatusCode != 200 {
-		t.Fatalf("Expected status code 200, got %v", resp.StatusCode)
-	}
-}
-
 func TestAddURLEntryRoute(t *testing.T) {
 	ts := httptest.NewServer(GetRouter()) 
 	// Shut down server and block until all requests go through
