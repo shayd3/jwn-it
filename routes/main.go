@@ -2,7 +2,6 @@ package routes
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/shayd3/jwn-it/controllers"
 )
 
 var (
@@ -22,14 +21,9 @@ func GetRouter() *gin.Engine {
 // SetupRouter sets up router with all it's routes
 func SetupRouter() {
 	getRoutes()
-	getRouterDefault()
 }
 
 func getRoutes() {
 	v1 := router.Group("/v1")
 	addJwnItRoutes(v1)
-}
-
-func getRouterDefault() {
-	router.NoRoute(controllers.RouteToTargetURL)
 }
