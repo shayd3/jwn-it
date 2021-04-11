@@ -9,7 +9,6 @@ import (
 	"github.com/shayd3/jwn-it/data"
 	"github.com/shayd3/jwn-it/models"
 	"github.com/shayd3/jwn-it/rand"
-	"github.com/shayd3/rand"
 	bolt "go.etcd.io/bbolt"
 )
 
