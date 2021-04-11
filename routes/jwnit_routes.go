@@ -9,6 +9,7 @@ func addJwnItRoutes(rg *gin.RouterGroup) {
 	jwnit := rg.Group("/")
 
 	jwnit.POST("/create", controllers.AddURLEntry)
+	jwnit.GET("/urls/:slug", controllers.GetURLEntry)
 	jwnit.GET("/urls", controllers.GetURLEntries)
 	jwnit.GET("/", controllers.Home)
 }
