@@ -8,10 +8,12 @@ import (
 
 	"github.com/shayd3/jwn-it/data"
 	"github.com/shayd3/jwn-it/models"
+	"github.com/shayd3/jwn-it/rand"
 	bolt "go.etcd.io/bbolt"
 )
 
 const db = "JWNIT"
+const randSlugLength = 8
 
 func GetURLEntries() ([]models.URLEntry, error) {
 	urlEntries := []models.URLEntry{}
@@ -48,12 +50,21 @@ func GetURLEntry(slug string) (models.URLEntry, error) {
 	return urlEntry, err
 }
 
-func AddURLEntry(urlEntry models.URLEntry) (models.URLEntry, error) {
+func AddURLEntry(urlEntry models.URLEntry, slugLength int) (models.URLEntry, error) {
 
 	// Check if URLEntry already exists for given slug 
 	_, err := GetURLEntry(urlEntry.Slug)
 	if(err == nil) {
 		return urlEntry, fmt.Errorf("entry for given slug '%s' already exists", urlEntry.Slug)
+	}
+
+	// Generate random slug if urlEntry.Slug is empty
+	if(urlEntry.Slug == "") {
+		if slugLength != 0 {
+			urlEntry.Slug = generateSlug(slugLength)
+		} else {
+			urlEntry.Slug = generateSlug(randSlugLength)
+		}
 	}
 
 	urlEntry.Created = time.Now()
@@ -82,4 +93,8 @@ func addHTTPSToURL(url string) string {
 
 func hasHTTPProtocol(url string) bool {
 	return strings.Contains(url, "http://") || strings.Contains(url, "https://")
+}
+
+func generateSlug(length int) string {
+	return rand.String(length)
 }
