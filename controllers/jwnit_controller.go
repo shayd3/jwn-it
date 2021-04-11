@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -48,10 +47,9 @@ func AddURLEntry(c *gin.Context) {
 	urlEntry, err = services.AddURLEntry(urlEntry)
 	
 	if err != nil {
-		panic(err)
+		c.JSON(http.StatusBadRequest, err.Error())
 	} else {
 		c.JSON(http.StatusOK, urlEntry)
 	}
-	fmt.Println("Added URL Entry")
 }
 

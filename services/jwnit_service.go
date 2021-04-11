@@ -51,8 +51,8 @@ func AddURLEntry(urlEntry models.URLEntry) (models.URLEntry, error) {
 
 	// Check if URLEntry already exists for given slug 
 	_, err := GetURLEntry(urlEntry.Slug)
-	if(err != nil) {
-		return urlEntry, fmt.Errorf("Entry for given slug already exists!")
+	if(err == nil) {
+		return urlEntry, fmt.Errorf("entry for given slug '%s' already exists", urlEntry.Slug)
 	}
 
 	urlEntry.Created = time.Now()
