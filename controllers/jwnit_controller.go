@@ -3,7 +3,6 @@ package controllers
 import (
 	"fmt"
 	"net/http"
-	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/shayd3/jwn-it/models"
@@ -28,9 +27,14 @@ func GetURLEntries(c *gin.Context) {
 }
 
 // GetURLEntry gets a URLEntry on the slug
-func GetURLEntry(c *gin.Context) (models.URLEntry, error) {	
-	urlEntry, err := services.GetURLEntry(strings.TrimLeft(c.Request.RequestURI, "/"))
-	return urlEntry, err
+func GetURLEntry(c *gin.Context) {
+	urlEntry, err := services.GetURLEntry(c.Param("slug"))
+
+	if err != nil {
+		c.Status(http.StatusNotFound)
+	} else {
+		c.JSON(http.StatusOK, urlEntry)
+	}
 }
 
 // AddURLEntry adds an URLEntry to the db. If TargetURL does not contain 'http://' or 'https://', it will automatically add 'https://'
