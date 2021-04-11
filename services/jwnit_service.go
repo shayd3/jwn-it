@@ -48,12 +48,19 @@ func GetURLEntry(slug string) (models.URLEntry, error) {
 }
 
 func AddURLEntry(urlEntry models.URLEntry) (models.URLEntry, error) {
+
+	// Check if URLEntry already exists for given slug 
+	_, err := GetURLEntry(urlEntry.Slug)
+	if(err != nil) {
+		return urlEntry, fmt.Errorf("Entry for given slug already exists!")
+	}
+
 	urlEntry.Created = time.Now()
 	if (!hasHTTPProtocol(urlEntry.TargetURL)) {
 		urlEntry.TargetURL = addHTTPSToURL(urlEntry.TargetURL)
 	}
 
-	err := data.DB.Update(func(t *bolt.Tx) error {
+	err = data.DB.Update(func(t *bolt.Tx) error {
 		encoded, err := json.Marshal(urlEntry)
 		if err != nil {
 			return fmt.Errorf("could not marshall URLEntry object: %v", err)
