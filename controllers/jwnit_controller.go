@@ -1,7 +1,9 @@
 package controllers
 
 import (
+	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/shayd3/jwn-it/models"
@@ -43,8 +45,21 @@ func AddURLEntry(c *gin.Context) {
 	if err != nil {
 		panic(err)
 	}
-	
-	urlEntry, err = services.AddURLEntry(urlEntry)
+
+	q, lengthQueryExists := c.GetQuery("length")
+	if lengthQueryExists {
+		slugLength, err := strconv.Atoi(q)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, fmt.Errorf("given length query invalid: %s", q))
+		}
+
+		urlEntry, err = services.AddURLEntry(urlEntry, slugLength)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, err.Error())
+		}
+	} else {
+		urlEntry, err = services.AddURLEntry(urlEntry, 0)
+	}
 	
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())

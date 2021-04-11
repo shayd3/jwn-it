@@ -13,7 +13,7 @@ import (
 )
 
 const db = "JWNIT"
-const randSlugLength = 10
+const randSlugLength = 8
 
 func GetURLEntries() ([]models.URLEntry, error) {
 	urlEntries := []models.URLEntry{}
@@ -50,7 +50,7 @@ func GetURLEntry(slug string) (models.URLEntry, error) {
 	return urlEntry, err
 }
 
-func AddURLEntry(urlEntry models.URLEntry) (models.URLEntry, error) {
+func AddURLEntry(urlEntry models.URLEntry, slugLength int) (models.URLEntry, error) {
 
 	// Check if URLEntry already exists for given slug 
 	_, err := GetURLEntry(urlEntry.Slug)
@@ -60,7 +60,11 @@ func AddURLEntry(urlEntry models.URLEntry) (models.URLEntry, error) {
 
 	// Generate random slug if urlEntry.Slug is empty
 	if(urlEntry.Slug == "") {
-		urlEntry.Slug = generateSlug(randSlugLength)
+		if slugLength != 0 {
+			urlEntry.Slug = generateSlug(slugLength)
+		} else {
+			urlEntry.Slug = generateSlug(randSlugLength)
+		}
 	}
 
 	urlEntry.Created = time.Now()
