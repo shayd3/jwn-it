@@ -11,11 +11,12 @@ import (
 	bolt "go.etcd.io/bbolt"
 )
 
+const db = "JWNIT"
 
 func GetURLEntries() ([]models.URLEntry, error) {
 	urlEntries := []models.URLEntry{}
 	err := data.DB.View(func(t *bolt.Tx) error {
-		bucket := t.Bucket([]byte("JWNIT"))
+		bucket := t.Bucket([]byte(db))
 		bucket.ForEach(func(k, v []byte) error {
 			var urlEntry models.URLEntry
 			err := json.Unmarshal(v, &urlEntry)
@@ -35,7 +36,7 @@ func GetURLEntry(slug string) (models.URLEntry, error) {
 	urlEntry := models.URLEntry{}
 
 	err := data.DB.View(func(t *bolt.Tx) error {
-		bucket := t.Bucket([]byte("JWNIT"))
+		bucket := t.Bucket([]byte(db))
 		key := []byte(slug)
 		err := json.Unmarshal(bucket.Get(key), &urlEntry)
 		if err != nil {
@@ -65,7 +66,7 @@ func AddURLEntry(urlEntry models.URLEntry) (models.URLEntry, error) {
 		if err != nil {
 			return fmt.Errorf("could not marshall URLEntry object: %v", err)
 		}
-		err = t.Bucket([]byte("JWNIT")).Put([]byte(urlEntry.Slug), encoded)
+		err = t.Bucket([]byte(db)).Put([]byte(urlEntry.Slug), encoded)
 		if err != nil {
 			return fmt.Errorf("could not insert URLEntry: %v", err)
 		}
