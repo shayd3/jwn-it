@@ -1,6 +1,8 @@
 # jwn-it
 URL Shortener to learn more about golang!
 
+Small personal project to get more comfortable with golang development
+
 # Development
 ## Run
 To run locally, run:

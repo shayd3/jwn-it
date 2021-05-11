@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
 )
 
@@ -26,4 +27,8 @@ func SetupRouter() {
 func getRoutes() {
 	v1 := router.Group("/v1")
 	addJwnItRoutes(v1)
+}
+
+func SetupStaticContent() {
+	router.Use(static.Serve("/", static.LocalFile("./spa/dist", false)))
 }
