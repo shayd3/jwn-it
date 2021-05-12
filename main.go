@@ -14,10 +14,12 @@ func main() {
 	// Don't close the database until the API shuts down
 	// defer will defer the execution of a function until the surrounding function returns
 	defer data.DB.Close()
+
 	fmt.Println("⚙️ Setting up Gin routes...")
 	routes.SetupRouter()
-	fmt.Println("⚙️ Routes successfully setup!")
 	routes.SetupStaticContent()
+	fmt.Println("⚙️ Routes successfully setup!")
+	
 	routes.Run()
 	fmt.Println("🚀 Up and running!")
 }
